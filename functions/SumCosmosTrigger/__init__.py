@@ -7,6 +7,7 @@ from datetime import datetime
 import os 
 import random
 import uuid
+import json
 
 def main(documents: func.DocumentList) -> str:
     if documents:
@@ -16,9 +17,9 @@ def main(documents: func.DocumentList) -> str:
     db = client.get_database_client(os.environ.get('COSMOSDB_NAME'))
     container = db.get_container_client(os.environ.get('COSMOSDB_CONTAINER'))
     for doc in documents:
-        doc_json = doc.to_json()
+        doc_json = json.loads(doc.to_json())
         logging.info(f'Before: {doc_json}')
-        doc_json['sum'] = int(doc_json['multiplier']) + int(doc_json['multiplicand'])
+        doc_json['product'] = int(doc_json['multiplier']) + int(doc_json['multiplicand'])
         now = datetime.now()
         doc_json['updatedDate'] = now.strftime("%m/%d/%Y %H:%M:%S")
         logging.info(f'After: {doc_json}')
