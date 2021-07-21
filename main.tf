@@ -86,12 +86,12 @@ data "template_file" "func" {
 
 resource "local_file" "comsostrigger" {
     sensitive_content     = data.template_file.func.rendered
-    filename = "${path.module}/functions/ComsosTrigger/function.json"
+    filename = "${path.module}/functions/CosmosTrigger/function.json"
 }
 
 resource "local_file" "sumcomsostrigger" {
     sensitive_content     = data.template_file.func.rendered
-    filename = "${path.module}/functions/SumComsosTrigger/function.json"
+    filename = "${path.module}/functions/SumCosmosTrigger/function.json"
 }
 
 module "functions" {
