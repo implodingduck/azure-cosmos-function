@@ -84,6 +84,15 @@ data "template_file" "func" {
   }
 }
 
+data "template_file" "jsfunc" {
+  template = "${file("${path.module}/jsfunction.json.tmpl")}"
+  vars = {
+    databaseName = "${local.func_name}-db"
+    connectionStringSetting = "COSMOSDB_CONNECTION_STR"
+    collectionName = "${local.func_name}-dbcontainer"
+  }
+}
+
 resource "local_file" "comsostrigger" {
     sensitive_content     = data.template_file.func.rendered
     filename = "${path.module}/functions/CosmosTrigger/function.json"
@@ -95,7 +104,7 @@ resource "local_file" "sumcomsostrigger" {
 }
 
 resource "local_file" "jscomsostrigger" {
-    sensitive_content     = data.template_file.func.rendered
+    sensitive_content     = data.template_file.jsfunc.rendered
     filename = "${path.module}/cosmosfunctions/ProductCosmosTrigger/function.json"
 }
 module "functions" {
