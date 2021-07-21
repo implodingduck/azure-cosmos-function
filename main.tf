@@ -96,7 +96,8 @@ resource "local_file" "sumcomsostrigger" {
 
 module "functions" {
   depends_on = [
-    data.template_file.func
+    local_file.comsostrigger,
+    local_file.sumcomsostrigger
   ]
   source = "github.com/implodingduck/tfmodules//functionapp"
   func_name = "${local.func_name}"
