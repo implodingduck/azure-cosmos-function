@@ -80,7 +80,7 @@ data "template_file" "func" {
   vars = {
     databaseName = "${local.func_name}-db"
     connectionStringSetting = azurerm_cosmosdb_account.db.connection_strings[0]
-    collectionName = ""
+    collectionName = "${local.func_name}-dbcontainer"
   }
 }
 
