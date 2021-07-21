@@ -74,3 +74,40 @@ resource "azurerm_cosmosdb_sql_container" "db" {
   partition_key_version = 1
   throughput            = 400
 }
+
+data "template_file" "func" {
+  template = "${file("${path.module}/function.json.tmpl")}"
+  vars = {
+    databaseName = "${local.func_name}-db"
+    connectionStringSetting = azurerm_cosmosdb_account.db.connection_strings[0]
+    collectionName = ""
+  }
+}
+
+resource "local_file" "comsostrigger" {
+    content     = data.template_file.func.rendered
+    filename = "${path.module}/functions/ComsosTrigger/function.json"
+}
+
+resource "local_file" "sumcomsostrigger" {
+    content     = data.template_file.func.rendered
+    filename = "${path.module}/functions/SumComsosTrigger/function.json"
+}
+
+module "functions" {
+  depends_on = [
+    data.template_file.func
+  ]
+  source = "github.com/implodingduck/tfmodules//functionapp"
+  func_name = "${local.func_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_location = azurerm_resource_group.rg.location
+  working_dir = "functions"
+  app_settings = {
+    "FUNCTIONS_WORKER_RUNTIME" = "python"
+    "COSMOSDB_ENDPOINT"        = azurerm_cosmosdb_account.db.endpoint
+    "COSMOSDB_KEY"             = azurerm_cosmosdb_account.db.primary_key
+    "COSMOSDB_NAME"            = "${local.func_name}-db"
+    "COSMOSDB_CONTAINER"       = "${local.func_name}-dbcontainer"
+  }
+}
