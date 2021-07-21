@@ -19,9 +19,10 @@ def main(documents: func.DocumentList) -> str:
     for doc in documents:
         doc_json = json.loads(doc.to_json())
         logging.info(f'Before: {doc_json}')
-        doc_json['product'] = int(doc_json['multiplier']) * int(doc_json['multiplicand'])
-        now = datetime.now()
-        doc_json['updatedDate'] = now.strftime("%m/%d/%Y %H:%M:%S")
-        logging.info(f'After: {doc_json}')
-        container.upsert_item(body=doc_json)
-        logging.info('Upsert Done!')
+        if doc_json['product'] == 0:
+            doc_json['product'] = int(doc_json['multiplier']) * int(doc_json['multiplicand'])
+            now = datetime.now()
+            doc_json['updatedDate'] = now.strftime("%m/%d/%Y %H:%M:%S")
+            logging.info(f'After: {doc_json}')
+            container.upsert_item(body=doc_json)
+            logging.info('Upsert Done!')
