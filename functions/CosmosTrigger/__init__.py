@@ -16,7 +16,10 @@ def main(documents: func.DocumentList) -> str:
     db = client.get_database_client(os.environ.get('COSMOSDB_NAME'))
     container = db.get_container_client(os.environ.get('COSMOSDB_CONTAINER'))
     for doc in documents:
+        logging.info(f'Before: {doc}')
         doc['product'] = int(doc['multiplier']) * int(doc['multiplicand'])
         now = datetime.now()
         doc['updatedDate'] = now.strftime("%m/%d/%Y %H:%M:%S")
+        logging.info(f'After: {doc}')
         container.upsert_item(body=doc)
+        logging.info('Upsert Done!')
