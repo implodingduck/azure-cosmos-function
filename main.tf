@@ -79,7 +79,7 @@ data "template_file" "func" {
   template = "${file("${path.module}/function.json.tmpl")}"
   vars = {
     databaseName = "${local.func_name}-db"
-    connectionStringSetting = azurerm_cosmosdb_account.db.connection_strings[0]
+    connectionStringSetting = "COSMOSDB_CONNECTION_STR"
     collectionName = "${local.func_name}-dbcontainer"
   }
 }
@@ -110,5 +110,6 @@ module "functions" {
     "COSMOSDB_KEY"             = azurerm_cosmosdb_account.db.primary_key
     "COSMOSDB_NAME"            = "${local.func_name}-db"
     "COSMOSDB_CONTAINER"       = "${local.func_name}-dbcontainer"
+    "COSMOSDB_CONNECTION_STR"  = "AccountEndpoint=${azurerm_cosmosdb_account.db.endpoint};AccountKey=${azurerm_cosmosdb_account.db.primary_key};"
   }
 }
