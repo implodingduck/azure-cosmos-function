@@ -38,7 +38,7 @@ resource "random_string" "unique" {
 }
 
 resource "azurerm_cosmosdb_account" "db" {
-  name                = "${local.func_name}2-dba"
+  name                = "${local.func_name}-dba"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   offer_type          = "Standard"
@@ -90,7 +90,7 @@ resource "local_file" "comsostrigger" {
 }
 
 resource "local_file" "sumcomsostrigger" {
-    content     = data.template_file.func.rendered
+    sensitive_content     = data.template_file.func.rendered
     filename = "${path.module}/functions/SumComsosTrigger/function.json"
 }
 
