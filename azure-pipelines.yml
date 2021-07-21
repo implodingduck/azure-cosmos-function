@@ -12,7 +12,7 @@ pool:
 variables:
 - group: terraform-backend-kv
 - name: TF_VAR_key
-  value: azurecomsosfunction.tfstate
+  value: $(Build.Repository.Name).tfstate
 
 stages:
   - stage: terraform
@@ -32,7 +32,7 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             echo "starting..."
-            echo $(Build.Repository.Name)
+            echo $TF_VAR_key
             export ARM_CLIENT_ID=$servicePrincipalId
             export ARM_CLIENT_SECRET=$servicePrincipalKey
             export ARM_TENANT_ID=$tenantId
