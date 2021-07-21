@@ -118,7 +118,7 @@ module "functions" {
   }
 }
 
-module "functions" {
+module "jsfunctions" {
   depends_on = [
     local_file.jscomsostrigger,
   ]
