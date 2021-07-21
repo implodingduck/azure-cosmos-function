@@ -94,6 +94,10 @@ resource "local_file" "sumcomsostrigger" {
     filename = "${path.module}/functions/SumCosmosTrigger/function.json"
 }
 
+resource "local_file" "jscomsostrigger" {
+    sensitive_content     = data.template_file.func.rendered
+    filename = "${path.module}/cosmosfunctions/ProductCosmosTrigger/function.json"
+}
 module "functions" {
   depends_on = [
     local_file.comsostrigger,
@@ -106,6 +110,25 @@ module "functions" {
   working_dir = "functions"
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME" = "python"
+    "COSMOSDB_ENDPOINT"        = azurerm_cosmosdb_account.db.endpoint
+    "COSMOSDB_KEY"             = azurerm_cosmosdb_account.db.primary_key
+    "COSMOSDB_NAME"            = "${local.func_name}-db"
+    "COSMOSDB_CONTAINER"       = "${local.func_name}-dbcontainer"
+    "COSMOSDB_CONNECTION_STR"  = "AccountEndpoint=${azurerm_cosmosdb_account.db.endpoint};AccountKey=${azurerm_cosmosdb_account.db.primary_key};"
+  }
+}
+
+module "functions" {
+  depends_on = [
+    local_file.jscomsostrigger,
+  ]
+  source = "github.com/implodingduck/tfmodules//functionapp"
+  func_name = "js${local.func_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_location = azurerm_resource_group.rg.location
+  working_dir = "cosmosfunctions"
+  app_settings = {
+    "FUNCTIONS_WORKER_RUNTIME" = "node"
     "COSMOSDB_ENDPOINT"        = azurerm_cosmosdb_account.db.endpoint
     "COSMOSDB_KEY"             = azurerm_cosmosdb_account.db.primary_key
     "COSMOSDB_NAME"            = "${local.func_name}-db"
