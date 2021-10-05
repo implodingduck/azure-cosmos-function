@@ -22,11 +22,13 @@ provider "azurerm" {
 
 locals {
   func_name = "cosmfun${random_string.unique.result}"
+  active    = 0 # change to 1 to deploy
 }
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "rg" {
+  count = local.active
   name     = "rg-comsos-function-demo"
   location = var.location
 }
@@ -38,6 +40,7 @@ resource "random_string" "unique" {
 }
 
 resource "azurerm_cosmosdb_account" "db" {
+  count = local.active
   name                = "${local.func_name}-dba"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -58,6 +61,7 @@ resource "azurerm_cosmosdb_account" "db" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "db" {
+  count = local.active
   name                = "${local.func_name}-db"
   resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
   account_name        = azurerm_cosmosdb_account.db.name
@@ -66,6 +70,7 @@ resource "azurerm_cosmosdb_sql_database" "db" {
 
 
 resource "azurerm_cosmosdb_sql_container" "db" {
+  count = local.active
   name                  = "${local.func_name}-dbcontainer"
   resource_group_name   = azurerm_cosmosdb_account.db.resource_group_name
   account_name          = azurerm_cosmosdb_account.db.name
@@ -119,6 +124,7 @@ resource "local_file" "jscomsostrigger" {
     filename = "${path.module}/cosmosfunctions/ProductCosmosTrigger/function.json"
 }
 module "functions" {
+  count = local.active
   depends_on = [
     local_file.comsostrigger,
     local_file.sumcomsostrigger
@@ -139,6 +145,7 @@ module "functions" {
 }
 
 module "jsfunctions" {
+  count = local.active
   depends_on = [
     local_file.jscomsostrigger,
   ]
