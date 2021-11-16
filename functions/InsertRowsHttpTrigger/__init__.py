@@ -18,7 +18,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info(req_body)
     num_inserts = 1
     if 'num' in req_body:
-        num_inserts = req_body['num']
+        num_inserts = int(req_body['num'])
 
     for i in range(num_inserts):
         now = datetime.now()
