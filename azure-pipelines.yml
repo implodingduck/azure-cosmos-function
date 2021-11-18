@@ -78,8 +78,8 @@ stages:
             export ARM_TENANT_ID=$tenantId
             mv functions/local.settings.json.sample functions/local.settings.json 
             mv cosmosfunctions/local.settings.json.sample cosmosfunctions/local.settings.json 
-            terraform apply -auto-approve theplan
-            #terraform destroy -auto-approve
+            #terraform apply -auto-approve theplan
+            terraform destroy -auto-approve
         env:
           TF_VAR_subscription_id: $(subscription-id)
           TF_VAR_storage_account_name: $(storage-account-name)
